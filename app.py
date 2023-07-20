@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 
 from langchain import PromptTemplate
-from langchain.agents import initialize_agent
+from langchain.agents import initialize_agent, Tool
 from langchain.agents import AgentType
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import MessagesPlaceholder
@@ -17,6 +17,7 @@ import requests
 import json
 import streamlit as st
 from langchain.schema import SystemMessage
+from fastapi import FastAPI
 
 # Load environment variables
 load_dotenv()
@@ -48,7 +49,7 @@ def search(query):
 # 2. Tool for scraping
 ########################
 #Scrape website
-def scrape_website(object: str, url: str):
+def scrape_website(objective: str, url: str):
     # This function will scrape website, and also will summarize the content based on the objective of the content
     # The objective is the original objective & task that the user gives to the agent, url is the url of the website to scrape
 
@@ -84,7 +85,7 @@ def scrape_website(object: str, url: str):
         print(f"HTTP request failed with status code {response.status_code}")
 
 # Get summary of the content
-def summary(object, content):
+def summary(objective, content):
     # Define model to use
     llm = ChatOpenAI(
         temperature=0,
@@ -182,22 +183,34 @@ agent = initialize_agent(
 # 4. Streamlit App
 ########################
 
-def main():
-    st.set_page_config(
-        page_title="AI Research agent",
-        page_icon="🤖",
-    )
+# def main():
+#     st.set_page_config(
+#         page_title="AI Research agent",
+#         page_icon="🤖",
+#     )
 
-    st.header("AI Research agent : 🤖")
-    query = st.text_input("Enter your Research Objective here:")
+#     st.header("AI Research agent : 🤖")
+#     query = st.text_input("Enter your Research Objective here:")
 
-    if query:
-        st.write("Doing research for: ", query)
+#     if query:
+#         st.write("Doing research for: ", query)
 
-        result = agent({"input": query})
+#         result = agent({"input": query})
 
-        st.info(result["output"])
+#         st.info(result["output"])
 
-# Run the main function
-if __name__ == "__main__":
-    main()
+# # Run the main function
+# if __name__ == "__main__":
+#     main()
+
+app = FastAPI()
+
+class Query(BaseModel):
+    query: str
+
+@app.post("/")
+def researchAgent(query: Query):
+    query = query.query
+    content = agent({"input": query})
+    actual_content = content['output']
+    return actual_content
