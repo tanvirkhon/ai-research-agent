@@ -15,6 +15,7 @@ from typing import Type
 from bs4 import BeautifulSoup
 import requests
 import json
+import streamlit as st
 from langchain.schema import SystemMessage
 from fastapi import FastAPI
 
@@ -182,34 +183,34 @@ agent = initialize_agent(
 # 4. Streamlit App
 ########################
 
-# def main():
-#     st.set_page_config(
-#         page_title="AI Research agent",
-#         page_icon="🤖",
-#     )
+def main():
+    st.set_page_config(
+        page_title="AI Research agent",
+        page_icon="🤖",
+    )
 
-#     st.header("AI Research agent : 🤖")
-#     query = st.text_input("Enter your Research Objective here:")
+    st.header("AI Research agent : 🤖")
+    query = st.text_input("Enter your Research Objective here:")
 
-#     if query:
-#         st.write("Doing research for: ", query)
+    if query:
+        st.write("Doing research for: ", query)
 
-#         result = agent({"input": query})
+        result = agent({"input": query})
 
-#         st.info(result["output"])
+        st.info(result["output"])
 
-# # Run the main function
-# if __name__ == "__main__":
-#     main()
+# Run the main function
+if __name__ == "__main__":
+    main()
 
-app = FastAPI()
+# app = FastAPI()
 
-class Query(BaseModel):
-    query: str
+# class Query(BaseModel):
+#     query: str
 
-@app.post("/")
-def researchAgent(query: Query):
-    query = query.query
-    content = agent({"input": query})
-    actual_content = content['output']
-    return actual_content
+# @app.post("/")
+# def researchAgent(query: Query):
+#     query = query.query
+#     content = agent({"input": query})
+#     actual_content = content['output']
+#     return actual_content
